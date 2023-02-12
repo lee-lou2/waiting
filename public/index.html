@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Server Sent Event</title>
+</head>
+
+<body>
+<div id="qr"></div>
+</body>
+
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+    const qrEle = document.getElementById("qr");
+    let stream = new EventSource("/stream");
+    stream.addEventListener("message", function(e){
+        qrEle.innerText = e.data;
+    });
+</script>
+
+</html>
