@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io"
 	"log"
+	"waiting/config/env"
 )
 
 type Event struct {
@@ -15,9 +16,16 @@ type Event struct {
 
 type ClientChan chan string
 
+var stream = NewServer()
+
 func main() {
+	// 환경 설정
+	env.Load()
+
+	// 리시버 실행
+	go messageQueReceiver()
+
 	r := gin.Default()
-	stream := NewServer()
 
 	router := r.Group("/")
 	router.GET("/stream", HeadersMiddleware(), stream.serveHTTP(), func(c *gin.Context) {
@@ -36,11 +44,6 @@ func main() {
 			}
 			return false
 		})
-	})
-	router.GET("/update", func(c *gin.Context) {
-		qr := c.Query("qr")
-		stream.Message <- qr
-		c.JSON(200, nil)
 	})
 
 	r.StaticFile("/", "./public/index.html")
