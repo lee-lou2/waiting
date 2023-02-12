@@ -28,25 +28,25 @@ func messageQueReceiver() {
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
-		"qr",  // name
-		false, // durable
-		false, // delete when unused
-		false, // exclusive
-		false, // no-wait
-		nil,   // arguments
+		"qr",
+		false,
+		false,
+		false,
+		false,
+		nil,
 	)
 	if err != nil {
 		log.Fatalf("Failed to declare a queue: %v", err)
 	}
 
 	messages, err := ch.Consume(
-		q.Name, // queue
-		"",     // consumer
-		true,   // auto-ack
-		false,  // exclusive
-		false,  // no-local
-		false,  // no-wait
-		nil,    // args
+		q.Name,
+		"",
+		true,
+		false,
+		false,
+		false,
+		nil,
 	)
 	if err != nil {
 		log.Fatalf("Failed to register a consumer: %v", err)
