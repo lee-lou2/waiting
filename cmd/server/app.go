@@ -1,34 +1,27 @@
 package server
 
 import (
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"waiting/config/env"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/template/html"
+	"waiting/config/db"
 )
 
 func Run() {
-	// 환경 설정
-	env.Load()
+	tx, _ := db.GetDatabase()
+	tx.AutoMigrate(&Brand{}, &Store{}, &StoreLocation{}, &StoreForm{})
 
-	// API 실행
-	r := gin.Default()
-	r.LoadHTMLGlob("./web/*")
+	engine := html.New("./web", ".html")
+	app := fiber.New(
+		fiber.Config{Views: engine},
+	)
+	app.Use(logger.New())
 
-	v1 := r.Group("/v1")
+	v1 := app.Group("/v1")
 	qr := v1.Group("/qr")
 	{
-		qr.GET("/:app/:uuid/", func(c *gin.Context) {
-			app := c.Param("app")
-			uuid := c.Param("uuid")
-
-			//uuidObj, _ := generateUUID()
-			err := messageQuePublisher(uuid)
-			fmt.Println(err)
-			// 1. 다음 QR 코드 생성
-			// 2. 작성해야하는 데이터 조회
-			c.HTML(200, "detail.html", gin.H{"app": app, "uuid": uuid})
-		})
+		qr.Get("/:app/:uuid", holdingHandler)
 	}
 
-	r.Run(":8000")
+	app.Listen(":3001")
 }

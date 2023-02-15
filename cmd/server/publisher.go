@@ -7,8 +7,8 @@ import (
 	"os"
 )
 
-// messageQuePublisher 매시지 큐 퍼블리싱
-func messageQuePublisher(message string) error {
+// QuePublisher 매시지 큐 퍼블리싱
+func QuePublisher(message string) error {
 	user := os.Getenv("RABBITMQ_USER")
 	password := os.Getenv("RABBITMQ_PASSWORD")
 	host := os.Getenv("RABBITMQ_HOST")
