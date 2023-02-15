@@ -1,6 +1,10 @@
 package server
 
-import "gorm.io/gorm"
+import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+	"time"
+)
 
 // Brand 브랜드
 type Brand struct {
@@ -34,4 +38,24 @@ type StoreForm struct {
 	Key      string `gorm:"not null;type:varchar(50)" json:"key"`
 	Type     string `gorm:"not null;type:varchar(50)" json:"type"`
 	IsActive bool   `gorm:"default:true"`
+}
+
+// AccessCode 접속 코드
+type AccessCode struct {
+	UUID      string `gorm:"primarykey;type:uuid"`
+	CreatedAt time.Time
+	StoreId   int
+	Store     Store `gorm:"constraint:OnDelete:CASCADE;" json:"store"`
+	IsExpired bool  `gorm:"default:false" json:"is_expired"`
+}
+
+// BeforeCreate UUID 생성
+func (a *AccessCode) BeforeCreate(tx *gorm.DB) error {
+	// UUID 생성
+	_uuid, err := uuid.NewUUID()
+	if err != nil {
+		return err
+	}
+	a.UUID = _uuid.String()
+	return nil
 }

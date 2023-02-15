@@ -8,30 +8,34 @@ import (
 
 // holdingHandler 대기 등록
 func holdingHandler(c *fiber.Ctx) error {
-	var brandObj Brand
+	var codeObj AccessCode
 	var storeObj Store
 	var storeLocationObj StoreLocation
 	var storeFormObj []StoreForm
 
-	app := c.Params("app")
+	store := c.Params("store")
 	reqUuid := c.Params("uuid")
-	fmt.Println(reqUuid)
+
+	// 0. UUID 가 유효한지 확인
+	tx, _ := db.GetDatabase()
+	tx.Where(&AccessCode{UUID: reqUuid, IsExpired: false}).First(&codeObj)
+	if codeObj.UUID == "" {
+		return c.Render("error", fiber.Map{})
+	}
+	// 만료 처리
+	codeObj.IsExpired = true
+	tx.Save(&codeObj)
 
 	// 1. 다음 QR 코드 생성
 	nextUrl := generateUrl()
+	fmt.Println(nextUrl)
 	if err := QuePublisher(nextUrl); err != nil {
 		return c.Render("error", fiber.Map{})
 	}
 
 	// 2. 작성해야하는 데이터 조회
-	tx, _ := db.GetDatabase()
-	// 브랜드 조회
-	tx.Where(&Brand{Name: app}).First(&brandObj)
-	if brandObj.ID == 0 {
-		return c.Render("error", fiber.Map{})
-	}
 	// 스토어 조회
-	tx.Where(&Store{Brand: brandObj}).First(&storeObj)
+	tx.Where("id = ?", store).First(&storeObj)
 	if storeObj.ID == 0 {
 		return c.Render("error", fiber.Map{})
 	}
@@ -40,15 +44,12 @@ func holdingHandler(c *fiber.Ctx) error {
 	tx.Where(&StoreForm{Store: storeObj}).Find(&storeFormObj)
 	for _, form := range storeFormObj {
 		fmt.Println(form.Key)
-		fmt.Println(form.Type)
 	}
 
 	// 지역 정보 조회
 	tx.Where(&StoreLocation{Store: storeObj}).First(&storeLocationObj)
-	fmt.Println(storeLocationObj.ID)
 
 	return c.Render("detail", fiber.Map{
-		"brand_name": brandObj.Name,
-		"store_name": storeObj.Name,
+		"store_name": store,
 	})
 }

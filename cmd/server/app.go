@@ -9,7 +9,7 @@ import (
 
 func Run() {
 	tx, _ := db.GetDatabase()
-	tx.AutoMigrate(&Brand{}, &Store{}, &StoreLocation{}, &StoreForm{})
+	tx.AutoMigrate(&Brand{}, &Store{}, &StoreLocation{}, &StoreForm{}, &AccessCode{})
 
 	engine := html.New("./web", ".html")
 	app := fiber.New(
@@ -20,7 +20,7 @@ func Run() {
 	v1 := app.Group("/v1")
 	qr := v1.Group("/qr")
 	{
-		qr.Get("/:app/:uuid", holdingHandler)
+		qr.Get("/:store/:uuid", holdingHandler)
 	}
 
 	app.Listen(":3001")
