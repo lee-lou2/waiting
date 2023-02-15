@@ -1,4 +1,4 @@
-package main
+package client
 
 import (
 	"fmt"
@@ -7,8 +7,8 @@ import (
 	"os"
 )
 
-// messageQueReceiver 메시지 큐 리시버
-func messageQueReceiver() {
+// messageQueConsumer 메시지 큐 컨슈머
+func messageQueConsumer() {
 	user := os.Getenv("RABBITMQ_USER")
 	password := os.Getenv("RABBITMQ_PASSWORD")
 	host := os.Getenv("RABBITMQ_HOST")

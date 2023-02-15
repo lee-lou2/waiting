@@ -41,6 +41,8 @@
     // 스트리밍
     let stream = new EventSource("/stream");
     stream.addEventListener("message", function(e){
+        const qrEle = document.getElementById("qr");
+        qrEle.innerHTML = "";
         new QRCode(document.getElementById("qr"), {
             text: e.data,
             width: 128,
