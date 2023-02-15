@@ -7,8 +7,8 @@ import (
 	"os"
 )
 
-// messageQueConsumer 메시지 큐 컨슈머
-func messageQueConsumer() {
+// QueConsumer 메시지 큐 컨슈머
+func QueConsumer(que *chan string) {
 	user := os.Getenv("RABBITMQ_USER")
 	password := os.Getenv("RABBITMQ_PASSWORD")
 	host := os.Getenv("RABBITMQ_HOST")
@@ -56,7 +56,7 @@ func messageQueConsumer() {
 
 	go func() {
 		for d := range messages {
-			stream.Message <- string(d.Body)
+			*que <- string(d.Body)
 		}
 	}()
 

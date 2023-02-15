@@ -1,26 +1,26 @@
 package client
 
 import (
-	"github.com/gin-gonic/gin"
-	"os"
-	"waiting/config/env"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/template/html"
 )
 
+// QRChan QR 기본 채널
+var QRChan chan string
+
+// Run 클라이언트 실행
 func Run() {
-	// 환경 설정
-	env.Load()
+	QRChan = make(chan string)
+	go QueConsumer(&QRChan)
 
-	// 리시버 실행
-	go messageQueConsumer()
+	engine := html.New("./web", ".html")
+	app := fiber.New(
+		fiber.Config{Views: engine},
+	)
+	app.Use(logger.New())
+	app.Get("/", qrPageHandler)
+	app.Get("/stream", streamHandler)
 
-	// API 실행
-	r := gin.Default()
-
-	user := os.Getenv("USER_ID")
-	password := os.Getenv("USER_PASSWORD")
-	authorized := r.Group("/", gin.BasicAuth(gin.Accounts{user: password}))
-	authorized.GET("/stream", HeadersMiddleware(), stream.serveHTTP(), streamHandler)
-
-	r.StaticFile("/", "./web/index.html")
-	r.Run(":8001")
+	app.Listen(":3000")
 }

@@ -21,7 +21,7 @@ func Run() {
 			app := c.Param("app")
 			uuid := c.Param("uuid")
 
-			uuidObj, _ := generateUUID()
+			//uuidObj, _ := generateUUID()
 			err := messageQuePublisher(uuid)
 			fmt.Println(err)
 			// 1. 다음 QR 코드 생성
