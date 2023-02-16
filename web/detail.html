@@ -5,6 +5,16 @@
     <title>Detail</title>
 </head>
 <body>
-Detail : {{.app}} / {{.uuid}}
+<div>
+    Detail : {{.store.Name}} / {{.location.Longitude}} / {{.location.Latitude}}
+</div>
+    {{range .forms}}
+    <div>
+        {{.Key}} / {{.Type}} / {{.Required}}
+    </div>
+    {{end}}
+<div>
+
+</div>
 </body>
 </html>

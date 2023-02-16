@@ -9,23 +9,24 @@ import (
 // Brand 브랜드
 type Brand struct {
 	gorm.Model
-	Name string `gorm:"not null;type:varchar(50)" json:"name"`
+	Name   string `gorm:"not null;type:varchar(50)" json:"name"`
+	Stores []Store
 }
 
 // Store 매장
 type Store struct {
 	gorm.Model
-	BrandId uint   `gorm:"foreignKey:ID"`
-	Brand   Brand  `gorm:"constraint:OnDelete:CASCADE;" json:"brand"`
-	Name    string `gorm:"not null;type:varchar(50)" json:"name"`
-	Forms   []StoreForm
+	BrandId  uint   `gorm:"foreignKey:ID"`
+	Brand    Brand  `gorm:"constraint:OnDelete:CASCADE;" json:"brand"`
+	Name     string `gorm:"not null;type:varchar(50)" json:"name"`
+	Forms    []StoreForm
+	Location StoreLocation
 }
 
 // StoreLocation 매장 위치
 type StoreLocation struct {
 	gorm.Model
-	StoreId   uint   `gorm:"foreignKey:ID"`
-	Store     Store  `gorm:"constraint:OnDelete:CASCADE;" json:"store"`
+	StoreId   uint
 	Latitude  string `gorm:"null" json:"latitude"`
 	Longitude string `gorm:"null" json:"longitude"`
 	IsActive  bool   `gorm:"default:false"`
@@ -38,7 +39,8 @@ type StoreForm struct {
 	Store    Store  `gorm:"constraint:OnDelete:CASCADE;" json:"store"`
 	Key      string `gorm:"not null;type:varchar(50)" json:"key"`
 	Type     string `gorm:"not null;type:varchar(50)" json:"type"`
-	IsActive bool   `gorm:"default:true"`
+	Required bool   `gorm:"default:false" json:"required"`
+	IsActive bool   `gorm:"default:true" json:"is_active"`
 }
 
 // AccessCode 접속 코드

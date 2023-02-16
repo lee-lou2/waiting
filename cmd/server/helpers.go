@@ -3,21 +3,15 @@ package server
 import (
 	"fmt"
 	"os"
-	"strconv"
 	"waiting/config/db"
 )
 
 // generateUrl URL 생성
-func generateUrl() string {
-	var codeObj AccessCode
-
-	store := os.Getenv("STORE_ID")
+func generateUrl(storeId uint) string {
 	host := os.Getenv("PROJECT_HOST")
 
-	storeId, _ := strconv.Atoi(store)
-	codeObj.StoreId = uint(storeId)
-
 	tx, _ := db.GetDatabase()
+	codeObj := AccessCode{StoreId: storeId}
 	tx.Create(&codeObj)
-	return fmt.Sprintf("%s/v1/qr/%s/%s/", host, store, codeObj.UUID)
+	return fmt.Sprintf("%s/v1/qr/%d/%s/", host, storeId, codeObj.UUID)
 }
