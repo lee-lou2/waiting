@@ -15,15 +15,16 @@ type Brand struct {
 // Store 매장
 type Store struct {
 	gorm.Model
-	BrandId int
+	BrandId uint   `gorm:"foreignKey:ID"`
 	Brand   Brand  `gorm:"constraint:OnDelete:CASCADE;" json:"brand"`
 	Name    string `gorm:"not null;type:varchar(50)" json:"name"`
+	Forms   []StoreForm
 }
 
 // StoreLocation 매장 위치
 type StoreLocation struct {
 	gorm.Model
-	StoreId   int
+	StoreId   uint   `gorm:"foreignKey:ID"`
 	Store     Store  `gorm:"constraint:OnDelete:CASCADE;" json:"store"`
 	Latitude  string `gorm:"null" json:"latitude"`
 	Longitude string `gorm:"null" json:"longitude"`
@@ -33,7 +34,7 @@ type StoreLocation struct {
 // StoreForm 스토어 작성 양식
 type StoreForm struct {
 	gorm.Model
-	StoreId  int
+	StoreId  uint   `gorm:"foreignKey:ID"`
 	Store    Store  `gorm:"constraint:OnDelete:CASCADE;" json:"store"`
 	Key      string `gorm:"not null;type:varchar(50)" json:"key"`
 	Type     string `gorm:"not null;type:varchar(50)" json:"type"`
@@ -44,7 +45,7 @@ type StoreForm struct {
 type AccessCode struct {
 	UUID      string `gorm:"primarykey;type:uuid"`
 	CreatedAt time.Time
-	StoreId   int
+	StoreId   uint  `gorm:"foreignKey:ID"`
 	Store     Store `gorm:"constraint:OnDelete:CASCADE;" json:"store"`
 	IsExpired bool  `gorm:"default:false" json:"is_expired"`
 }

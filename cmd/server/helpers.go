@@ -15,7 +15,7 @@ func generateUrl() string {
 	host := os.Getenv("PROJECT_HOST")
 
 	storeId, _ := strconv.Atoi(store)
-	codeObj.StoreId = storeId
+	codeObj.StoreId = uint(storeId)
 
 	tx, _ := db.GetDatabase()
 	tx.Create(&codeObj)
